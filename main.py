@@ -13,7 +13,7 @@ pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((800, 600))
 
 # Background
-background = pygame.image.load("background.png")
+background = pygame.image.load("background.jpg")
 
 # Player
 playerImg = pygame.image.load("player.png")
@@ -73,20 +73,21 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 playerX_change = -5
-
             if event.key == pygame.K_RIGHT:
                 playerX_change = 5
-                if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE:
+                if bullet_state is "ready":
+                    bulletX = playerX
                     fire_bullet(playerX, bulletY)
 
         if event.type == pygame.KEYUP:
-            playerX_change = 0
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                # 5 = 5 + -0.1 -> 5 = 5 - 0.1
-                # 5 = 5 + 0.1
-                # Checking for boundaries of spaceship so it doesn't go out of bounds
-                playerX += playerX_change
+                playerX_change = 0
 
+    # 5 = 5 + -0.1 -> 5 = 5 - 0.1
+    # 5 = 5 + 0.1
+
+    playerX += playerX_change
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
@@ -101,6 +102,15 @@ while running:
     elif enemyX >= 736:
         enemyX_change = -4
         enemyY += enemyY_change
+
+    # Bullet Movement
+    if bulletY <= 0:
+        bulletY = 480
+        bullet_state = "ready"
+
+    if bullet_state is "fire":
+        fire_bullet(playerX, bulletY)
+        bulletY -= bulletY_change
 
     player(playerX, playerY)
     enemy(enemyX, enemyY)
