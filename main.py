@@ -9,10 +9,11 @@ PLAYER_SIZE = 64
 BLACK_COLOR = (0, 0, 0)
 IMG_PATH = "images/"
 UFO_IMG = "{0}ufo.png".format(IMG_PATH)
-BACKGROUNG_IMG = "{0}background.jpg".format(IMG_PATH)
+BACKGROUND_IMG = "{0}background.jpg".format(IMG_PATH)
 PLAYER_IMG = "{0}player.png".format(IMG_PATH)
 ENEMY_IMG = "{0}enemy.png".format(IMG_PATH)
 BULLET_IMG = "{0}bullet.png".format(IMG_PATH)
+ENEMY_X_CHANGE_VALUE = 2
 
 # Initialize the pygame
 pygame.init()
@@ -26,34 +27,36 @@ pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
 
 # Background
-background = pygame.image.load(BACKGROUNG_IMG)
+background = pygame.image.load(BACKGROUND_IMG)
 
 # Player
 playerImg = pygame.image.load(PLAYER_IMG)
 # Player horizontal position
-playerX = 370
-playerX_change = 0
+player_X_position = 370
+player_X_position_change = 0
 
 # Player vertical position
-playerY = 480
-playerY_change = 0
+player_Y_position = 480
+player_Y_position_change = 0
 
 # Enemy
 enemyImg = pygame.image.load(ENEMY_IMG)
-enemyX = random.randint(0, GAME_WIDTH)
-enemyY = random.randint(50, 150)
-enemyX_change = 2.5
-enemyY_change = 20
+enemy_X_position = random.randint(0, GAME_WIDTH)
+enemy_Y_position = random.randint(50, 150)
+enemy_X_position_change = 2.5
+enemy_Y_position_change = 20
 
 # Bullet
 # Ready - You can't see the bullet on the screen
 # Fire - The bullet is currently moving
 bulletImg = pygame.image.load(BULLET_IMG)
-bulletX = 0
-bulletY = 480
-bulletX_change = 0
-bulletY_change = 10
+bullet_X_position = 0
+bullet_Y_position = 480
+bullet_X_position_change = 0
+bullet_Y_position_change = 10
 bullet_state = "ready"
+
+score = 0
 
 
 def player(x, y):
@@ -71,24 +74,24 @@ def fire_bullet(x, y):
 
 
 def handle_keydown_event(eventType, eventKey):
-    global playerX, playerX_change, playerY_change, bullet_state, bulletX, bulletY
+    global player_X_position, player_X_position_change, player_Y_position_change, bullet_state, bullet_X_position, bullet_Y_position
 
     # if keystroke is pressed check whether its right or left
     if eventType == pygame.KEYDOWN:
         if eventKey == pygame.K_LEFT:
-            playerX_change = -5
+            player_X_position_change = -5
         if eventKey == pygame.K_RIGHT:
-            playerX_change = 5
+            player_X_position_change = 5
         if eventKey == pygame.K_UP:
-            playerY_change = -2.5
+            player_Y_position_change = -2.5
         if eventKey == pygame.K_DOWN:
-            playerY_change = 2.5
+            player_Y_position_change = 2.5
         if eventKey == pygame.K_SPACE:
             if bullet_state is "ready":
                 # Get current x cordinate of the spaceship
-                bulletX = playerX
-                bulletY = playerY
-                fire_bullet(bulletX, bulletY)
+                bullet_X_position = player_X_position
+                bullet_Y_position = player_Y_position
+                fire_bullet(bullet_X_position, bullet_Y_position)
 
     # if keystroke is released don't change the players position
     if eventType == pygame.KEYUP:
@@ -98,57 +101,91 @@ def handle_keydown_event(eventType, eventKey):
             or eventKey == pygame.K_DOWN
             or eventKey == pygame.K_UP
         ):
-            playerX_change = 0
-            playerY_change = 0
+            player_X_position_change = 0
+            player_Y_position_change = 0
 
 
-def apply_playerX_change():
-    global playerX, playerX_change
+def change_player_X_position():
+    global player_X_position, player_X_position_change
 
-    playerX += playerX_change
-    if playerX <= 0:
-        playerX = 0
-    elif playerX >= (GAME_WIDTH - PLAYER_SIZE):
-        playerX = GAME_WIDTH - PLAYER_SIZE
+    player_X_position += player_X_position_change
+    if player_X_position <= 0:
+        player_X_position = 0
+    elif player_X_position >= (GAME_WIDTH - PLAYER_SIZE):
+        player_X_position = GAME_WIDTH - PLAYER_SIZE
 
 
-def apply_playerY_change():
-    global playerY, playerY_change
+def change_player_Y_position():
+    global player_Y_position, player_Y_position_change
 
-    playerY += playerY_change
-    if playerY <= 0:
-        playerY = 0
-    elif playerY >= (GAME_HEIGHT - PLAYER_SIZE):
-        playerY = GAME_HEIGHT - PLAYER_SIZE
+    player_Y_position += player_Y_position_change
+    if player_Y_position <= 0:
+        player_Y_position = 0
+    elif player_Y_position >= (GAME_HEIGHT - PLAYER_SIZE):
+        player_Y_position = GAME_HEIGHT - PLAYER_SIZE
 
 
 def move_enemy():
-    global enemyX, enemyX_change, enemyY, enemyY_change
+    global enemy_X_position, enemy_X_position_change, enemy_Y_position, enemy_Y_position_change
 
     # Enemy Movement
-    enemyX += enemyX_change
+    enemy_X_position += enemy_X_position_change
 
-    if enemyX <= 0:
-        enemyX_change = 4
-        enemyY += enemyY_change
-    elif enemyX >= (GAME_WIDTH - PLAYER_SIZE):
-        enemyX_change = -4
-        enemyY += enemyY_change
+    if enemy_X_position <= 0:
+        enemy_X_position_change = ENEMY_X_CHANGE_VALUE
+        enemy_Y_position += enemy_Y_position_change
+    elif enemy_X_position >= (GAME_WIDTH - PLAYER_SIZE):
+        enemy_X_position_change = -ENEMY_X_CHANGE_VALUE
+        enemy_Y_position += enemy_Y_position_change
 
 
 def move_bullet():
-    global bulletY, bulletY_change, bullet_state, playerX
+    global bullet_Y_position, bullet_Y_position_change, bullet_state, player_X_position
 
-    if bulletY <= 0:
-        bulletY = 480
+    if bullet_Y_position <= 0:
+        bullet_Y_position = 480
         bullet_state = "ready"
 
     if bullet_state is "fire":
-        fire_bullet(playerX, bulletY)
-        bulletY -= bulletY_change
+        fire_bullet(player_X_position, bullet_Y_position)
+        bullet_Y_position -= bullet_Y_position_change
 
 
-# Game Loop
+def calculate_distance(x1, x2, y1, y2):
+    # Calculate the differences
+    x = x1 - x2
+    y = y1 - y2
+
+    # Square the differences
+    x = x ** 2
+    y = y ** 2
+
+    # Return the square root
+    return (x + y) ** (1 / 2)
+
+
+def isCollision(
+    enemy_X_position, enemy_Y_position, bullet_X_position, bullet_Y_position
+):
+    distance = calculate_distance(
+        enemy_X_position, bullet_X_position, enemy_Y_position, bullet_Y_position
+    )
+
+    if distance < 27:
+        return True
+    else:
+        return False
+
+
+def change_enemy_position():
+    global enemy_X_position, enemy_Y_position
+    enemy_X_position = random.randint(0, 735)
+    enemy_Y_position = random.randint(50, 150)
+
+
+"""
+GAME LOOP INIT
+"""
 running = True
 while running:
 
@@ -166,11 +203,11 @@ while running:
                 event.type, (event.key if hasattr(event, "key") else None)
             )  # if keystroke is pressed check whether its right or left
 
-    # Add playerX_change to the current playerX position
-    apply_playerX_change()
+    # Change player X position
+    change_player_X_position()
 
-    # Add playerY_change to the current playerY position
-    apply_playerY_change()
+    # Change player Y position
+    change_player_Y_position()
 
     # Enemy Movement
     move_enemy()
@@ -178,7 +215,18 @@ while running:
     # Bullet Movement
     move_bullet()
 
+    # Collision
+    collision = isCollision(
+        enemy_X_position, enemy_Y_position, bullet_X_position, bullet_Y_position
+    )
+    if collision:
+        bullet_Y_position = player_Y_position
+        bullet_state = "ready"
+        score += 1
+        print(score)
+        change_enemy_position()
+
     # Update player and enemy positions
-    player(playerX, playerY)
-    enemy(enemyX, enemyY)
+    player(player_X_position, player_Y_position)
+    enemy(enemy_X_position, enemy_Y_position)
     pygame.display.update()
