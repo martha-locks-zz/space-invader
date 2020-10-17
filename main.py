@@ -71,11 +71,6 @@ def player(x, y):
     screen.blit(playerImg, (x, y))
 
 
-def enemy(x, y, i):
-    global enemies
-    screen.blit(enemies[i], (x, y))
-
-
 def fire_bullet(x, y):
     global bullet_state
     bullet_state = "fire"
@@ -146,6 +141,11 @@ def move_bullet():
         bullet_Y_position -= bullet_Y_position_change
 
 
+"""
+ENEMY LOGIC
+"""
+
+
 def calculate_distance(x1, x2, y1, y2):
     # Calculate the differences
     x = x1 - x2
@@ -207,7 +207,7 @@ def move_enemy():
             print(SCORE)
             change_enemy_position(i)
 
-        enemy(enemies_X_position[i], enemies_Y_position[i], i)
+        screen.blit(enemies[i], (enemies_X_position[i], enemies_Y_position[i]))
 
 
 """
