@@ -1,34 +1,50 @@
 import pygame
 import random
 
-# Constants
+"""
+Game Constants
+"""
+GAME_IMAGE_PATH = "images/"
 GAME_TITLE = "Space Invader"
 GAME_WIDTH = 800
 GAME_HEIGHT = 600
+GAME_TITLE_IMG = "{0}ufo.png".format(GAME_IMAGE_PATH)
+GAME_BLACK_COLOR = (0, 0, 0)
+GAME_BACKGROUND_IMG = "{0}background.jpg".format(GAME_IMAGE_PATH)
+GAME_SCORE = 0
+
+"""
+Player Constants
+"""
+PLAYER_IMG = "{0}player.png".format(GAME_IMAGE_PATH)
 PLAYER_SIZE = 64
-BLACK_COLOR = (0, 0, 0)
-IMG_PATH = "images/"
-UFO_IMG = "{0}ufo.png".format(IMG_PATH)
-BACKGROUND_IMG = "{0}background.jpg".format(IMG_PATH)
-PLAYER_IMG = "{0}player.png".format(IMG_PATH)
-BULLET_IMG = "{0}bullet.png".format(IMG_PATH)
+PLAYER_X_CHANGE_VALUE = 5
+PLAYER_Y_CHANGE_VALUE = 2.5
+
+"""
+Enemy Constants
+"""
 ENEMY_X_CHANGE_VALUE = 2
 NUMBER_OF_ENEMIES = 6
-SCORE = 0
+
+"""
+Bullet Constants
+"""
+BULLET_IMG = "{0}bullet.png".format(GAME_IMAGE_PATH)
+
 
 # Initialize the pygame
 pygame.init()
 
 # Caption and Icon
 pygame.display.set_caption(GAME_TITLE)
-icon = pygame.image.load(UFO_IMG)
-pygame.display.set_icon(icon)
+pygame.display.set_icon(pygame.image.load(GAME_TITLE_IMG))
 
 # Create the screen
 screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
 
 # Background
-background = pygame.image.load(BACKGROUND_IMG)
+background = pygame.image.load(GAME_BACKGROUND_IMG)
 
 # Player
 playerImg = pygame.image.load(PLAYER_IMG)
@@ -49,7 +65,7 @@ enemies_Y_position_change = []
 
 # Create the enemies
 for i in range(NUMBER_OF_ENEMIES):
-    enemyImg = "{0}enemy_{1}.png".format(IMG_PATH, i)
+    enemyImg = "{0}enemy_{1}.png".format(GAME_IMAGE_PATH, i)
     enemies.append(pygame.image.load(enemyImg))
     enemies_X_position.append(random.randint(0, 735))
     enemies_Y_position.append(random.randint(50, 150))
@@ -67,11 +83,11 @@ bullet_Y_position_change = 10
 bullet_state = "ready"
 
 
-def player(x, y):
+def set_player_at(x, y):
     screen.blit(playerImg, (x, y))
 
 
-def fire_bullet(x, y):
+def fire_bullet_at(x, y):
     global bullet_state
     bullet_state = "fire"
     screen.blit(bulletImg, (x + 16, y + 10))
@@ -83,19 +99,19 @@ def handle_keydown_event(eventType, eventKey):
     # if keystroke is pressed check whether its right or left
     if eventType == pygame.KEYDOWN:
         if eventKey == pygame.K_LEFT:
-            player_X_position_change = -5
+            player_X_position_change = -PLAYER_X_CHANGE_VALUE
         if eventKey == pygame.K_RIGHT:
-            player_X_position_change = 5
+            player_X_position_change = PLAYER_X_CHANGE_VALUE
         if eventKey == pygame.K_UP:
-            player_Y_position_change = -2.5
+            player_Y_position_change = -PLAYER_Y_CHANGE_VALUE
         if eventKey == pygame.K_DOWN:
-            player_Y_position_change = 2.5
+            player_Y_position_change = PLAYER_Y_CHANGE_VALUE
         if eventKey == pygame.K_SPACE:
             if bullet_state is "ready":
                 # Get current x cordinate of the spaceship
                 bullet_X_position = player_X_position
                 bullet_Y_position = player_Y_position
-                fire_bullet(bullet_X_position, bullet_Y_position)
+                fire_bullet_at(bullet_X_position, bullet_Y_position)
 
     # if keystroke is released don't change the players position
     if eventType == pygame.KEYUP:
@@ -137,13 +153,18 @@ def move_bullet():
         bullet_state = "ready"
 
     if bullet_state is "fire":
-        fire_bullet(player_X_position, bullet_Y_position)
+        fire_bullet_at(player_X_position, bullet_Y_position)
         bullet_Y_position -= bullet_Y_position_change
 
 
 """
 ENEMY LOGIC
 """
+
+
+def set_enemy_at(x, y, i):
+    global enemies
+    screen.blit(enemies[i], (x, y))
 
 
 def calculate_distance(x1, x2, y1, y2):
@@ -180,7 +201,7 @@ def change_enemy_position(i):
 
 
 def move_enemy():
-    global enemies_X_position, enemies_X_position_change, enemies_Y_position, enemies_Y_position_change, bullet_Y_position, bullet_state, SCORE
+    global enemies_X_position, enemies_X_position_change, enemies_Y_position, enemies_Y_position_change, bullet_Y_position, bullet_state, GAME_SCORE
 
     # Enemies Movement
     for i in range(NUMBER_OF_ENEMIES):
@@ -203,11 +224,11 @@ def move_enemy():
         if collision:
             bullet_Y_position = player_Y_position
             bullet_state = "ready"
-            SCORE += 1
-            print(SCORE)
+            GAME_SCORE += 1
+            print(GAME_SCORE)
             change_enemy_position(i)
 
-        screen.blit(enemies[i], (enemies_X_position[i], enemies_Y_position[i]))
+        set_enemy_at(enemies_X_position[i], enemies_Y_position[i], i)
 
 
 """
@@ -217,7 +238,7 @@ running = True
 while running:
 
     # RGB - Red, Green, Blue
-    screen.fill(BLACK_COLOR)
+    screen.fill(GAME_BLACK_COLOR)
 
     # Background Image
     screen.blit(background, (0, 0))
@@ -243,5 +264,5 @@ while running:
     move_bullet()
 
     # Update player and enemy positions
-    player(player_X_position, player_Y_position)
+    set_player_at(player_X_position, player_Y_position)
     pygame.display.update()
