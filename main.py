@@ -2,6 +2,11 @@ import pygame
 import random
 
 """
+ Initialize the pygame
+"""
+pygame.init()
+
+"""
 Game Constants
 """
 GAME_IMAGE_PATH = "images/"
@@ -12,6 +17,9 @@ GAME_TITLE_IMG = "{0}ufo.png".format(GAME_IMAGE_PATH)
 GAME_BLACK_COLOR = (0, 0, 0)
 GAME_BACKGROUND_IMG = "{0}background.jpg".format(GAME_IMAGE_PATH)
 GAME_SCORE = 0
+GAME_SCORE_X_POSITION = 10
+GAME_SCORE_Y_POSITION = 10
+GAME_FONT = pygame.font.Font("freesansbold.ttf", 32)
 
 """
 Player Constants
@@ -31,10 +39,6 @@ NUMBER_OF_ENEMIES = 6
 Bullet Constants
 """
 BULLET_IMG = "{0}bullet.png".format(GAME_IMAGE_PATH)
-
-
-# Initialize the pygame
-pygame.init()
 
 # Caption and Icon
 pygame.display.set_caption(GAME_TITLE)
@@ -73,14 +77,19 @@ for i in range(NUMBER_OF_ENEMIES):
     enemies_Y_position_change.append(20)
 
 # Bullet
-# Ready - You can't see the bullet on the screen
-# Fire - The bullet is currently moving
+# ready - You can't see the bullet on the screen
+# fire - The bullet is currently moving
 bulletImg = pygame.image.load(BULLET_IMG)
 bullet_X_position = 0
 bullet_Y_position = 480
 bullet_X_position_change = 0
 bullet_Y_position_change = 10
 bullet_state = "ready"
+
+
+def set_score_text(x, y):
+    score = GAME_FONT.render("Score: {0}".format(GAME_SCORE), True, (255, 255, 255))
+    screen.blit(score, (x, y))
 
 
 def set_player_at(x, y):
@@ -225,7 +234,6 @@ def move_enemy():
             bullet_Y_position = player_Y_position
             bullet_state = "ready"
             GAME_SCORE += 1
-            print(GAME_SCORE)
             change_enemy_position(i)
 
         set_enemy_at(enemies_X_position[i], enemies_Y_position[i], i)
@@ -265,4 +273,5 @@ while running:
 
     # Update player and enemy positions
     set_player_at(player_X_position, player_Y_position)
+    set_score_text(GAME_SCORE_X_POSITION, GAME_SCORE_Y_POSITION)
     pygame.display.update()
