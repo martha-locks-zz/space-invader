@@ -1,6 +1,6 @@
 # Space Invasion Game
 
-This is a simple game I created based on the youtube tutorial [Pygame Tutorial for Beginners - Python Game Development Course](https://www.youtube.com/watch?v=FfWpgLFMI7w).
+This is a simple game in Python I've programmed based on the youtube tutorial [Pygame Tutorial for Beginners - Python Game Development Course](https://www.youtube.com/watch?v=FfWpgLFMI7w).
 
 ## Running
 
