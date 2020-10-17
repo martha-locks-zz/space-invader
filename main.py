@@ -10,12 +10,14 @@ pygame.init()
 Game Constants
 """
 GAME_IMAGE_PATH = "images/"
+GAME_SOUNDS_PATH = "sounds/"
 GAME_TITLE = "Space Invader"
 GAME_WIDTH = 800
 GAME_HEIGHT = 600
 GAME_TITLE_IMG = "{0}ufo.png".format(GAME_IMAGE_PATH)
 GAME_BLACK_COLOR = (0, 0, 0)
 GAME_BACKGROUND_IMG = "{0}background.jpg".format(GAME_IMAGE_PATH)
+GAME_BACKGROUND_MUSIC = "{0}background.ogg".format(GAME_SOUNDS_PATH)
 GAME_SCORE = 0
 GAME_SCORE_X_POSITION = 10
 GAME_SCORE_Y_POSITION = 10
@@ -34,11 +36,13 @@ Enemy Constants
 """
 ENEMY_X_CHANGE_VALUE = 2
 NUMBER_OF_ENEMIES = 6
+ENEMY_MUSIC = "{0}explosion.ogg".format(GAME_SOUNDS_PATH)
 
 """
 Bullet Constants
 """
 BULLET_IMG = "{0}bullet.png".format(GAME_IMAGE_PATH)
+BULLET_MUSIC = "{0}laser.ogg".format(GAME_SOUNDS_PATH)
 
 # Caption and Icon
 pygame.display.set_caption(GAME_TITLE)
@@ -49,6 +53,21 @@ screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
 
 # Background
 background = pygame.image.load(GAME_BACKGROUND_IMG)
+
+# Function to play music
+def play_music(music, loop):
+    pygame.mixer.music.load(music)
+    pygame.mixer.music.play(loop)
+
+
+# Function to play sound
+def play_sound(music):
+    sound = pygame.mixer.Sound(music)
+    sound.play()
+
+
+# Background Sound
+play_music(GAME_BACKGROUND_MUSIC, -1)
 
 # Player
 playerImg = pygame.image.load(PLAYER_IMG)
@@ -98,6 +117,7 @@ def set_player_at(x, y):
 
 def fire_bullet_at(x, y):
     global bullet_state
+
     bullet_state = "fire"
     screen.blit(bulletImg, (x + 16, y + 10))
 
@@ -117,6 +137,7 @@ def handle_keydown_event(eventType, eventKey):
             player_Y_position_change = PLAYER_Y_CHANGE_VALUE
         if eventKey == pygame.K_SPACE:
             if bullet_state is "ready":
+                play_sound(BULLET_MUSIC)
                 # Get current x cordinate of the spaceship
                 bullet_X_position = player_X_position
                 bullet_Y_position = player_Y_position
@@ -235,6 +256,7 @@ def move_enemy():
             bullet_state = "ready"
             GAME_SCORE += 1
             change_enemy_position(i)
+            play_sound(ENEMY_MUSIC)
 
         set_enemy_at(enemies_X_position[i], enemies_Y_position[i], i)
 
