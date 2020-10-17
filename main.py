@@ -41,19 +41,20 @@ player_Y_position = 480
 player_Y_position_change = 0
 
 # Enemies lists
-enemyImg = []
-enemy_X_position = []
-enemy_Y_position = []
-enemy_X_position_change = []
-enemy_Y_position_change = []
+enemies = []
+enemies_X_position = []
+enemies_Y_position = []
+enemies_X_position_change = []
+enemies_Y_position_change = []
 
 # Create the enemies
 for i in range(NUMBER_OF_ENEMIES):
-    enemyImg.append(pygame.image.load("{0}enemy_{1}.png".format(IMG_PATH, i)))
-    enemy_X_position.append(random.randint(0, GAME_WIDTH))
-    enemy_Y_position.append(random.randint(50, 150))
-    enemy_X_position_change.append(2)
-    enemy_Y_position_change.append(20)
+    enemyImg = "{0}enemy_{1}.png".format(IMG_PATH, i)
+    enemies.append(pygame.image.load(enemyImg))
+    enemies_X_position.append(random.randint(0, 735))
+    enemies_Y_position.append(random.randint(50, 150))
+    enemies_X_position_change.append(2)
+    enemies_Y_position_change.append(20)
 
 # Bullet
 # Ready - You can't see the bullet on the screen
@@ -71,7 +72,8 @@ def player(x, y):
 
 
 def enemy(x, y, i):
-    screen.blit(enemyImg[i], (x, y))
+    global enemies
+    screen.blit(enemies[i], (x, y))
 
 
 def fire_bullet(x, y):
@@ -132,37 +134,6 @@ def change_player_Y_position():
         player_Y_position = GAME_HEIGHT - PLAYER_SIZE
 
 
-def move_enemy():
-    global enemy_X_position, enemy_X_position_change, enemy_Y_position, enemy_Y_position_change, bullet_Y_position, bullet_state, SCORE
-
-    # Enemies Movement
-    for i in range(NUMBER_OF_ENEMIES):
-        enemy_X_position[i] += enemy_X_position_change[i]
-
-        if enemy_X_position[i] <= 0:
-            enemy_X_position_change[i] = ENEMY_X_CHANGE_VALUE
-            enemy_Y_position[i] += enemy_Y_position_change[i]
-        elif enemy_X_position[i] >= (GAME_WIDTH - PLAYER_SIZE):
-            enemy_X_position_change[i] = -ENEMY_X_CHANGE_VALUE
-            enemy_Y_position[i] += enemy_Y_position_change[i]
-
-        # Collision
-        collision = isCollision(
-            enemy_X_position[i],
-            enemy_Y_position[i],
-            bullet_X_position,
-            bullet_Y_position,
-        )
-        if collision:
-            bullet_Y_position = player_Y_position
-            bullet_state = "ready"
-            SCORE += 1
-            print(SCORE)
-            change_enemy_position(i)
-
-        enemy(enemy_X_position[i], enemy_Y_position[i], i)
-
-
 def move_bullet():
     global bullet_Y_position, bullet_Y_position_change, bullet_state, player_X_position
 
@@ -202,10 +173,41 @@ def isCollision(
 
 
 def change_enemy_position(i):
-    global enemy_X_position, enemy_Y_position
+    global enemies_X_position, enemies_Y_position
 
-    enemy_X_position[i] = random.randint(0, 735)
-    enemy_Y_position[i] = random.randint(50, 150)
+    enemies_X_position[i] = random.randint(0, 735)
+    enemies_Y_position[i] = random.randint(50, 150)
+
+
+def move_enemy():
+    global enemies_X_position, enemies_X_position_change, enemies_Y_position, enemies_Y_position_change, bullet_Y_position, bullet_state, SCORE
+
+    # Enemies Movement
+    for i in range(NUMBER_OF_ENEMIES):
+        enemies_X_position[i] += enemies_X_position_change[i]
+
+        if enemies_X_position[i] <= 0:
+            enemies_X_position_change[i] = ENEMY_X_CHANGE_VALUE
+            enemies_Y_position[i] += enemies_Y_position_change[i]
+        elif enemies_X_position[i] >= (GAME_WIDTH - PLAYER_SIZE):
+            enemies_X_position_change[i] = -ENEMY_X_CHANGE_VALUE
+            enemies_Y_position[i] += enemies_Y_position_change[i]
+
+        # Collision
+        collision = isCollision(
+            enemies_X_position[i],
+            enemies_Y_position[i],
+            bullet_X_position,
+            bullet_Y_position,
+        )
+        if collision:
+            bullet_Y_position = player_Y_position
+            bullet_state = "ready"
+            SCORE += 1
+            print(SCORE)
+            change_enemy_position(i)
+
+        enemy(enemies_X_position[i], enemies_Y_position[i], i)
 
 
 """
