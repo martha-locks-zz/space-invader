@@ -11,9 +11,10 @@ IMG_PATH = "images/"
 UFO_IMG = "{0}ufo.png".format(IMG_PATH)
 BACKGROUND_IMG = "{0}background.jpg".format(IMG_PATH)
 PLAYER_IMG = "{0}player.png".format(IMG_PATH)
-ENEMY_IMG = "{0}enemy.png".format(IMG_PATH)
 BULLET_IMG = "{0}bullet.png".format(IMG_PATH)
 ENEMY_X_CHANGE_VALUE = 2
+NUMBER_OF_ENEMIES = 6
+SCORE = 0
 
 # Initialize the pygame
 pygame.init()
@@ -39,12 +40,20 @@ player_X_position_change = 0
 player_Y_position = 480
 player_Y_position_change = 0
 
-# Enemy
-enemyImg = pygame.image.load(ENEMY_IMG)
-enemy_X_position = random.randint(0, GAME_WIDTH)
-enemy_Y_position = random.randint(50, 150)
-enemy_X_position_change = 2.5
-enemy_Y_position_change = 20
+# Enemies lists
+enemyImg = []
+enemy_X_position = []
+enemy_Y_position = []
+enemy_X_position_change = []
+enemy_Y_position_change = []
+
+# Create the enemies
+for i in range(NUMBER_OF_ENEMIES):
+    enemyImg.append(pygame.image.load("{0}enemy_{1}.png".format(IMG_PATH, i)))
+    enemy_X_position.append(random.randint(0, GAME_WIDTH))
+    enemy_Y_position.append(random.randint(50, 150))
+    enemy_X_position_change.append(2)
+    enemy_Y_position_change.append(20)
 
 # Bullet
 # Ready - You can't see the bullet on the screen
@@ -56,15 +65,13 @@ bullet_X_position_change = 0
 bullet_Y_position_change = 10
 bullet_state = "ready"
 
-score = 0
-
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
 
 
-def enemy(x, y):
-    screen.blit(enemyImg, (x, y))
+def enemy(x, y, i):
+    screen.blit(enemyImg[i], (x, y))
 
 
 def fire_bullet(x, y):
@@ -126,17 +133,34 @@ def change_player_Y_position():
 
 
 def move_enemy():
-    global enemy_X_position, enemy_X_position_change, enemy_Y_position, enemy_Y_position_change
+    global enemy_X_position, enemy_X_position_change, enemy_Y_position, enemy_Y_position_change, bullet_Y_position, bullet_state, SCORE
 
-    # Enemy Movement
-    enemy_X_position += enemy_X_position_change
+    # Enemies Movement
+    for i in range(NUMBER_OF_ENEMIES):
+        enemy_X_position[i] += enemy_X_position_change[i]
 
-    if enemy_X_position <= 0:
-        enemy_X_position_change = ENEMY_X_CHANGE_VALUE
-        enemy_Y_position += enemy_Y_position_change
-    elif enemy_X_position >= (GAME_WIDTH - PLAYER_SIZE):
-        enemy_X_position_change = -ENEMY_X_CHANGE_VALUE
-        enemy_Y_position += enemy_Y_position_change
+        if enemy_X_position[i] <= 0:
+            enemy_X_position_change[i] = ENEMY_X_CHANGE_VALUE
+            enemy_Y_position[i] += enemy_Y_position_change[i]
+        elif enemy_X_position[i] >= (GAME_WIDTH - PLAYER_SIZE):
+            enemy_X_position_change[i] = -ENEMY_X_CHANGE_VALUE
+            enemy_Y_position[i] += enemy_Y_position_change[i]
+
+        # Collision
+        collision = isCollision(
+            enemy_X_position[i],
+            enemy_Y_position[i],
+            bullet_X_position,
+            bullet_Y_position,
+        )
+        if collision:
+            bullet_Y_position = player_Y_position
+            bullet_state = "ready"
+            SCORE += 1
+            print(SCORE)
+            change_enemy_position(i)
+
+        enemy(enemy_X_position[i], enemy_Y_position[i], i)
 
 
 def move_bullet():
@@ -177,10 +201,11 @@ def isCollision(
         return False
 
 
-def change_enemy_position():
+def change_enemy_position(i):
     global enemy_X_position, enemy_Y_position
-    enemy_X_position = random.randint(0, 735)
-    enemy_Y_position = random.randint(50, 150)
+
+    enemy_X_position[i] = random.randint(0, 735)
+    enemy_Y_position[i] = random.randint(50, 150)
 
 
 """
@@ -215,18 +240,6 @@ while running:
     # Bullet Movement
     move_bullet()
 
-    # Collision
-    collision = isCollision(
-        enemy_X_position, enemy_Y_position, bullet_X_position, bullet_Y_position
-    )
-    if collision:
-        bullet_Y_position = player_Y_position
-        bullet_state = "ready"
-        score += 1
-        print(score)
-        change_enemy_position()
-
     # Update player and enemy positions
     player(player_X_position, player_Y_position)
-    enemy(enemy_X_position, enemy_Y_position)
     pygame.display.update()
