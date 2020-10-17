@@ -55,6 +55,26 @@ def fire_bullet(x, y):
     screen.blit(bulletImg, (x + 16, y + 10))
 
 
+def handle_keydown_event(event):
+    global playerX, playerX_change, bullet_state, bulletX, bulletY
+
+    # if keystroke is pressed check whether its right or left
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+            playerX_change = -5
+        if event.key == pygame.K_RIGHT:
+            playerX_change = 5
+        if event.key == pygame.K_SPACE:
+            if bullet_state is "ready":
+                # Get current x cordinate of the spaceship
+                bulletX = playerX
+                fire_bullet(bulletX, bulletY)
+
+    if event.type == pygame.KEYUP:
+        if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            playerX_change = 0
+
+
 # Game Loop
 running = True
 while running:
@@ -70,19 +90,7 @@ while running:
             running = False
 
         # if keystroke is pressed check whether its right or left
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                playerX_change = -5
-            if event.key == pygame.K_RIGHT:
-                playerX_change = 5
-            if event.key == pygame.K_SPACE:
-                if bullet_state is "ready":
-                    bulletX = playerX
-                    fire_bullet(playerX, bulletY)
-
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                playerX_change = 0
+        handle_keydown_event(event)
 
     # 5 = 5 + -0.1 -> 5 = 5 - 0.1
     # 5 = 5 + 0.1
