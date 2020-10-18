@@ -1,4 +1,4 @@
-# Space Invasion Game
+# Space Invader Game
 
 This is a simple game in Python I've programmed based on the youtube tutorial [Pygame Tutorial for Beginners - Python Game Development Course](https://www.youtube.com/watch?v=FfWpgLFMI7w).
 
