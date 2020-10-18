@@ -2,6 +2,8 @@
 
 This is a simple game in Python I've programmed based on the youtube tutorial [Pygame Tutorial for Beginners - Python Game Development Course](https://www.youtube.com/watch?v=FfWpgLFMI7w).
 
+![Game Screen](images/screenshot.png)
+
 ## Running
 
 **1. In the _project root directory_ just run the command:**
