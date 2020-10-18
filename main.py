@@ -63,7 +63,7 @@ def play_music(music, loop):
 # Function to play sound
 def play_sound(music):
     sound = pygame.mixer.Sound(music)
-    sound.play()
+    # sound.play()
 
 
 # Background Sound
