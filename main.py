@@ -136,7 +136,7 @@ def handle_keydown_event(eventType, eventKey):
         if eventKey == pygame.K_DOWN:
             player_Y_position_change = PLAYER_Y_CHANGE_VALUE
         if eventKey == pygame.K_SPACE:
-            if bullet_state is "ready":
+            if bullet_state == "ready":
                 play_sound(BULLET_MUSIC)
                 # Get current x cordinate of the spaceship
                 bullet_X_position = player_X_position
@@ -182,7 +182,7 @@ def move_bullet():
         bullet_Y_position = 480
         bullet_state = "ready"
 
-    if bullet_state is "fire":
+    if bullet_state == "fire":
         fire_bullet_at(player_X_position, bullet_Y_position)
         bullet_Y_position -= bullet_Y_position_change
 
